@@ -1,54 +1,32 @@
-import { Box, Checkbox, IconButton } from "@mui/material";
 import { Task } from "../../../types";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { useState } from "react";
-import { completeTask, deleteTask, incompleteTask } from "../../../api";
 import { ToDoItem } from "../ToDoItem/ToDoItem";
 
 type TaskItemProps = {
-	task: Task;
-	optimisticDelete: (id: string) => void;
-	onEdit: (id: string, text: string) => void;
+  task: Task;
+  onDelete: () => void;
+  onEdit: (id: string, text: string) => void;
+  onCompleted: () => void;
 };
 
-export const TaskItem = ({ task, optimisticDelete, onEdit }: TaskItemProps) => {
-	const [checked, setChecked] = useState(task.completed);
+export const TaskItem = ({
+  task,
+  onDelete,
+  onEdit,
+  onCompleted,
+}: TaskItemProps) => {
+  const { completed, id, text } = task;
 
-	const onCompleted = () => {
-		setChecked(!checked);
-		try {
-			if (!checked) {
-				completeTask(task.id);
-				return;
-			}
+  const onSubmit = (text: string) => {
+    onEdit(id, text);
+  };
 
-			incompleteTask(task.id);
-		} catch (error) {
-			setChecked(checked);
-			console.error(error);
-		}
-	};
-
-	const onSubmit = (text: string) => {
-		onEdit(task.id, text);
-	};
-
-	const onDelete = () => {
-		optimisticDelete(task.id);
-		try {
-			deleteTask(task.id);
-		} catch (error) {
-			console.error(error);
-		}
-	};
-
-	return (
-		<ToDoItem
-			text={task.text}
-			completed={checked}
-			onCompleted={onCompleted}
-			onDelete={onDelete}
-			onSubmit={onSubmit}
-		/>
-	);
+  return (
+    <ToDoItem
+      text={text}
+      completed={completed}
+      onCompleted={onCompleted}
+      onDelete={onDelete}
+      onSubmit={onSubmit}
+    />
+  );
 };
